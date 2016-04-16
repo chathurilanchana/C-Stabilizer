@@ -17,9 +17,7 @@ using namespace std;
 #include <string>
 #include <utility>
 #include <algorithm>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+
 
 #define SECONDS      1000000000
 #define MILLISECONDS 1000000
@@ -87,11 +85,11 @@ int ProcessingThread::processQ() {
 	while ((pCont = m_ptrComQ->PollFromConsumerQueue())) {
 		ReceivedMessage * _pMsg = (ReceivedMessage*) pCont->m_ptrData;
 		vector<Label> _pLabels=_pMsg->GetLabels();
-		/*printf(
-					"The processed message is  %ld %i %i \n",
-					 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());*/
+		printf(
+					"The processed message is  %ld %i %ld \n",
+					 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());
 		m_processed=m_processed+1;
-		if ((m_processed% 1000)==0){
+		if ((m_processed% 10)==0){
 			printf("count is %ld \n",m_processed);
 		}
 		delete _pMsg;

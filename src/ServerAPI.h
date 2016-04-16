@@ -32,7 +32,7 @@ public:
 	void OnDisconnect(Server * _pServer, Client * _pClient, ErrorMsgTag _Err);
 	void OnReadyToSend(Server * _pServer, Client * _pClient);
 	void Decode(Client *_pClient);
-	void ProcessedSocketData(unsigned int _uClientId, char *_ptrData);
+	ReceivedMessage* ProcessedSocketData(unsigned int _uClientId, char *_ptrData);
 
 private:
 	static pthread_t m_threadid;

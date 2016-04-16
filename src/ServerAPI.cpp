@@ -71,7 +71,7 @@ void ServerAPI::OnTimer(Timer * _pTimer) {
 
 }
 
-void ServerAPI::ProcessedSocketData(unsigned int _uClientId, char *_ptrData) {
+ReceivedMessage* ServerAPI::ProcessedSocketData(unsigned int _uClientId, char *_ptrData) {
 	/*cout << "[INFO] [ClientID - " << _uClientId << "]" << " Actual Data:  " << _ptrData
 			<< endl;*/
 	vector<Label> labels; //because we receive a list of labels
@@ -106,15 +106,11 @@ void ServerAPI::ProcessedSocketData(unsigned int _uClientId, char *_ptrData) {
 		}
 		//printf("partition id: %i heartbeat %ld \n", partitionId, heartbeat);
 		ReceivedMessage *pEventData = new ReceivedMessage(partitionId, heartbeat, labels);
+		delete [] _ptrData;
+		delete [] chars_array;
+		delete [] lblstr;
 
-		m_ptrQueueSizeCondition->IncreaseQueueSize(m_iSingleContainerSize);
-		EventDataPacket *pPacket = new EventDataPacket(pEventData);
-		m_pQHolder->AddToProducerQueue(pPacket);
-	    m_pQHolder->PushToIntermediateQueue();
-
-	    delete [] _ptrData;
-	    delete [] chars_array;
-	    delete [] lblstr;
+		return pEventData;
 
 	// Note : Once we processed the data, we should delete the _ptrData by calling delete [] _ptrData.
 	// Otherwise there will be a memory leak
@@ -142,6 +138,14 @@ void ServerAPI::Decode(Client *_pClient) {
 			char *ptrData = new char[l_iPayLoadLength];
 			memset(ptrData, 0, l_iPayLoadLength);
 			memcpy(ptrData, pData, (l_iPayLoadLength - 1));
+
+			/*pushing to queue*/
+		    ReceivedMessage *pEventData =ProcessedSocketData(_pClient->GetClientID(), ptrData);
+			m_ptrQueueSizeCondition->IncreaseQueueSize(m_iSingleContainerSize);
+			EventDataPacket *pPacket = new EventDataPacket(pEventData);
+		    m_pQHolder->AddToProducerQueue(pPacket);
+			m_pQHolder->PushToIntermediateQueue();
+
 			_pClient->m_RcvBuffer.DeleteFromStart(l_iPayLoadLength + 1);
 			pData = _pClient->m_RcvBuffer.GetData();
 
