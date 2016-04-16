@@ -11,11 +11,7 @@
 #include "ServerAPI.h"
 #include "ProcessingThread.h"
 #include "ThreadUtil.h"
-
 #include <iostream>
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace std;
 
