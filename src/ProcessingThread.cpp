@@ -17,6 +17,9 @@ using namespace std;
 #include <string>
 #include <utility>
 #include <algorithm>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #define SECONDS      1000000000
 #define MILLISECONDS 1000000
@@ -32,6 +35,7 @@ ProcessingThread::ProcessingThread() {
 	m_bIsIinterrupt = false;
 	m_threadid = 0;
 	m_iSingleContainerSize=0;
+	m_processed=0;
 
 }
 
@@ -52,6 +56,7 @@ void *ProcessingThread::Run(void * _pLHandler) {
 	((ProcessingThread*) _pLHandler)->StartProcesser();
 	return NULL;
 }
+
 
 pthread_t ProcessingThread::StartProcessingThread(
 		ProcessingThread *_ptrProcessingThread) {
@@ -74,6 +79,7 @@ void ProcessingThread::StartProcesser() {
 }
 
 int ProcessingThread::processQ() {
+
 	EventDataPacket * pCont = NULL;
 	int l_iProcessedMsg = 0;
 
@@ -81,9 +87,13 @@ int ProcessingThread::processQ() {
 	while ((pCont = m_ptrComQ->PollFromConsumerQueue())) {
 		ReceivedMessage * _pMsg = (ReceivedMessage*) pCont->m_ptrData;
 		vector<Label> _pLabels=_pMsg->GetLabels();
-		printf(
+		/*printf(
 					"The processed message is  %ld %i %i \n",
-					 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());
+					 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());*/
+		m_processed=m_processed+1;
+		if ((m_processed% 1000)==0){
+			printf("count is %ld \n",m_processed);
+		}
 		delete _pMsg;
 		delete pCont;
 		pCont = NULL;

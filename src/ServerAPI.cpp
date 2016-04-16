@@ -71,9 +71,9 @@ void ServerAPI::OnTimer(Timer * _pTimer) {
 
 }
 
-ReceivedMessage* ServerAPI::ProcessedSocketData(unsigned int _uClientId, char *_ptrData) {
-	cout << "[INFO] [ClientID - " << _uClientId << "]" << " Actual Data:  " << _ptrData
-			<< endl;
+void ServerAPI::ProcessedSocketData(unsigned int _uClientId, char *_ptrData) {
+	/*cout << "[INFO] [ClientID - " << _uClientId << "]" << " Actual Data:  " << _ptrData
+			<< endl;*/
 	vector<Label> labels; //because we receive a list of labels
 		std::vector<char*> v;
 		char* chars_array = strtok(_ptrData, "|");
@@ -98,14 +98,23 @@ ReceivedMessage* ServerAPI::ProcessedSocketData(unsigned int _uClientId, char *_
 				lbl.push_back(lblparam);
 				lblparam = strtok(NULL, ":");
 			}
+
 			unsigned long heartbeat = strtoul(lbl[0], NULL, 0);
 			int value = atoi(lbl[1]);
 			Label *pLabel1 = new Label(heartbeat, value);
 			labels.push_back(*pLabel1);
 		}
-		printf("partition id: %i heartbeat %ld \n", partitionId, heartbeat);
+		//printf("partition id: %i heartbeat %ld \n", partitionId, heartbeat);
 		ReceivedMessage *pEventData = new ReceivedMessage(partitionId, heartbeat, labels);
-		return pEventData;
+
+		m_ptrQueueSizeCondition->IncreaseQueueSize(m_iSingleContainerSize);
+		EventDataPacket *pPacket = new EventDataPacket(pEventData);
+		m_pQHolder->AddToProducerQueue(pPacket);
+	    m_pQHolder->PushToIntermediateQueue();
+
+	    delete [] _ptrData;
+	    delete [] chars_array;
+	    delete [] lblstr;
 
 	// Note : Once we processed the data, we should delete the _ptrData by calling delete [] _ptrData.
 	// Otherwise there will be a memory leak
@@ -133,13 +142,6 @@ void ServerAPI::Decode(Client *_pClient) {
 			char *ptrData = new char[l_iPayLoadLength];
 			memset(ptrData, 0, l_iPayLoadLength);
 			memcpy(ptrData, pData, (l_iPayLoadLength - 1));
-			ReceivedMessage *pEventData =ProcessedSocketData(_pClient->GetClientID(), ptrData);
-
-			m_ptrQueueSizeCondition->IncreaseQueueSize(m_iSingleContainerSize);
-			EventDataPacket *pPacket = new EventDataPacket(pEventData);
-		    m_pQHolder->AddToProducerQueue(pPacket);
-			m_pQHolder->PushToIntermediateQueue();
-
 			_pClient->m_RcvBuffer.DeleteFromStart(l_iPayLoadLength + 1);
 			pData = _pClient->m_RcvBuffer.GetData();
 

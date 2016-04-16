@@ -39,6 +39,7 @@ private:
 	pthread_t m_threadid;
 	volatile bool m_bIsIinterrupt;
 	struct timeval m_tPerformanceTime;
+	unsigned long m_processed;
 };
 
 #endif /* PROCESSINGTHREAD_H_ */

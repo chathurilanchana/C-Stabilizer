@@ -19,7 +19,10 @@
 
 using namespace std;
 
+
+
 int main() {
+
 	// start the server, this call is blocking call, never return!!!
 	//ServerAPI *ptrServer = new ServerAPI();
     //delete ptrServer;
