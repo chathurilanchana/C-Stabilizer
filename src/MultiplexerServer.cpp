@@ -27,9 +27,9 @@ int main() {
 	m_ptrCondtionLock->InitQueueSizeCondition(50000);
 
 	EventQueueFrame *l_ptrQ = new EventQueueFrame();
-	ProcessingThread *l_ptrProcThread = new ProcessingThread();
+	/*ProcessingThread *l_ptrProcThread = new ProcessingThread();
 	l_ptrProcThread->InitProcessingThread(l_ptrQ, m_ptrCondtionLock, 60);
-	l_ptrProcThread->StartProcessingThread(l_ptrProcThread);
+	l_ptrProcThread->StartProcessingThread(l_ptrProcThread);*/
 
 	ServerAPI *l_ptrRec = new ServerAPI();
 	l_ptrRec->InintReceiverThread(l_ptrQ, m_ptrCondtionLock, 60);
@@ -41,7 +41,7 @@ int main() {
 
 	delete m_ptrCondtionLock;
 	delete l_ptrQ;
-	delete l_ptrProcThread;
+	//delete l_ptrProcThread;
 	delete l_ptrRec;
 	return 0;
 	 return 0;

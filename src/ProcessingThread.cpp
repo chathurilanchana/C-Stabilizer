@@ -95,6 +95,7 @@ int ProcessingThread::processQ() {
 		delete _pMsg;
 		delete pCont;
 		pCont = NULL;
+		vector<Label>().swap( _pLabels );
 	}
 	return l_iProcessedMsg * m_iSingleContainerSize;
 

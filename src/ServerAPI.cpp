@@ -103,13 +103,15 @@ ReceivedMessage* ServerAPI::ProcessedSocketData(unsigned int _uClientId, char *_
 			int value = atoi(lbl[1]);
 			Label *pLabel1 = new Label(heartbeat, value);
 			labels.push_back(*pLabel1);
+			vector<char*>().swap( lbl );
 		}
 		//printf("partition id: %i heartbeat %ld \n", partitionId, heartbeat);
 		ReceivedMessage *pEventData = new ReceivedMessage(partitionId, heartbeat, labels);
 		delete [] _ptrData;
 		delete [] chars_array;
 		delete [] lblstr;
-
+		vector<Label>().swap( labels );
+		vector<char*>().swap( lbls );
 		return pEventData;
 
 	// Note : Once we processed the data, we should delete the _ptrData by calling delete [] _ptrData.
