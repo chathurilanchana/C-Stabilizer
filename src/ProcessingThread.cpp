@@ -17,7 +17,7 @@ using namespace std;
 #include <string>
 #include <utility>
 #include <algorithm>
-
+#include <sys/time.h>
 
 #define SECONDS      1000000000
 #define MILLISECONDS 1000000
@@ -26,20 +26,19 @@ using namespace std;
 
 using namespace utl;
 
-
 ProcessingThread::ProcessingThread() {
 	m_ptrCondtionLock = NULL;
-	m_ptrComQ=NULL;
+	m_ptrComQ = NULL;
 	m_bIsIinterrupt = false;
 	m_threadid = 0;
-	m_iSingleContainerSize=0;
-	m_processed=0;
+	m_iSingleContainerSize = 0;
+	m_processed = 0;
+	m_oldTimerTick=0;
 
 }
 
 ProcessingThread::~ProcessingThread() {
-	std::cout << "[ProcessingThread] Deallocating the memory now "
-			<< std::endl;
+	std::cout << "[ProcessingThread] Deallocating the memory now " << std::endl;
 }
 void ProcessingThread::InitProcessingThread(
 		EventQueueFrame *_ptrJavaObjectDispatcher,
@@ -50,11 +49,22 @@ void ProcessingThread::InitProcessingThread(
 	m_ptrCondtionLock = _ptrCondtionLock;
 
 }
+
+void ProcessingThread::SetClientCount(int count){
+	m_iclientCount=count;
+	for (int n = 1; n <count; ++n) {
+		m_heartbeat[n]=0; //intilalize heartbeat
+	}
+}
+
+void ProcessingThread::setDeleteThreshold(int deleteThreshold){
+	m_ideleteThreshold=deleteThreshold;
+}
+
 void *ProcessingThread::Run(void * _pLHandler) {
 	((ProcessingThread*) _pLHandler)->StartProcesser();
 	return NULL;
 }
-
 
 pthread_t ProcessingThread::StartProcessingThread(
 		ProcessingThread *_ptrProcessingThread) {
@@ -76,22 +86,74 @@ void ProcessingThread::StartProcesser() {
 	}
 }
 
+void ProcessingThread::UpdateHeartbeatTable(int _iPartitionId,
+		unsigned long _iHeartbeat) {
+	m_heartbeat[_iPartitionId] = _iHeartbeat;
+}
+
+unsigned long ProcessingThread::GetStableTimestamp(int _iPartitionId) {
+	unsigned long l_minStableTimestamp = m_heartbeat[_iPartitionId];
+	std::map<int, unsigned long>::iterator it;
+	for (it = m_heartbeat.begin(); it != m_heartbeat.end(); ++it) {
+		if (it->second < l_minStableTimestamp) {
+			l_minStableTimestamp = it->second;
+		}
+	}
+	return l_minStableTimestamp;
+}
+
+void ProcessingThread::InsertBatchLabels(vector<Label*> _iLabels) {
+	for (size_t n = 0; n < _iLabels.size(); ++n) {
+		Label *pLabel1 = _iLabels[n];
+		m_storage.insert(
+				std::pair<unsigned long, int>(pLabel1->GetTimestamp(),
+						pLabel1->GetValue()));
+	}
+}
+
+std::list<int> ProcessingThread::DeletePossibleLabels(
+		unsigned long StableTimestamp) {
+	std::multimap<unsigned long, int>::iterator it, itup;
+	std::list<int> deletedList;
+	itup = m_storage.upper_bound(StableTimestamp);
+	for (it = m_storage.begin(); it != itup; ++it) {
+		deletedList.push_back((*it).second);
+		m_processed = m_processed + 1;
+	}
+    m_storage.erase(m_storage.begin(), itup);
+    printf("after delete contains %ld \n",m_storage.size());
+    return deletedList;
+}
+
 int ProcessingThread::processQ() {
 
 	EventDataPacket * pCont = NULL;
 	int l_iProcessedMsg = 0;
-
+	struct timeval tp;
 	m_ptrComQ->PollFromIntermediateQueue();
 	while ((pCont = m_ptrComQ->PollFromConsumerQueue())) {
 		++l_iProcessedMsg;
 		ReceivedMessage * _pMsg = (ReceivedMessage*) pCont->m_ptrData;
-		vector<Label*> _pLabels=_pMsg->GetLabels();
-		printf(
-					"The processed message is  %ld %i %ld \n",
-					 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());
-		m_processed=m_processed+1;
-		if ((m_processed% 10)==0){
-			printf("count is %ld \n",m_processed);
+		//vector<Label*> _pLabels=_pMsg->GetLabels();
+		/*printf(
+		 "The processed message is  %ld %i %ld \n",
+		 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());*/
+		int l_ipartitionId = _pMsg->GetPartionId();
+
+		InsertBatchLabels(_pMsg->GetLabels());
+
+		UpdateHeartbeatTable(l_ipartitionId, _pMsg->GetHeartbeat());
+		unsigned long l_iStable = GetStableTimestamp(l_ipartitionId);
+		std::list<int> deletedList=DeletePossibleLabels(l_iStable);
+
+		if (m_processed >= m_ideleteThreshold) {
+			struct timeval tp;
+			gettimeofday(&tp, NULL);
+		    long int l_newTick = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+		    long int duration = l_newTick - m_oldTimerTick;
+		    std::cout << "Duration in ms: "<< duration << " Delete count: "<<m_processed << "\n";
+		    m_oldTimerTick=l_newTick;
+			m_processed=0;
 		}
 		delete _pMsg;
 		delete pCont;

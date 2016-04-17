@@ -75,8 +75,8 @@ void ServerAPI::OnTimer(Timer * _pTimer) {
 
 ReceivedMessage* ServerAPI::ProcessedSocketData(unsigned int _uClientId,
 		char *_ptrData) {
-	cout << "[INFO] [ClientID - " << _uClientId << "]" << " Actual Data:  " << _ptrData
-	<< endl;
+	/*cout << "[INFO] [ClientID - " << _uClientId << "]" << " Actual Data:  " << _ptrData
+	<< endl;*/
 	++g_ReceivedMsg;
 	 //printf("processed - %d \n",procesedmsg);
 	vector<Label*> labels; //because we receive a list of labels
