@@ -15,7 +15,7 @@
 
 using namespace std;
 
-
+#define SIZE_OF_EVENTPACKET 24
 
 int main() {
 
@@ -27,16 +27,16 @@ int main() {
 	m_ptrCondtionLock->InitQueueSizeCondition(50000);
 
 	EventQueueFrame *l_ptrQ = new EventQueueFrame();
-	/*ProcessingThread *l_ptrProcThread = new ProcessingThread();
-	l_ptrProcThread->InitProcessingThread(l_ptrQ, m_ptrCondtionLock, 60);
-	l_ptrProcThread->StartProcessingThread(l_ptrProcThread);*/
+	ProcessingThread *l_ptrProcThread = new ProcessingThread();
+	l_ptrProcThread->InitProcessingThread(l_ptrQ, m_ptrCondtionLock, SIZE_OF_EVENTPACKET);
+	l_ptrProcThread->StartProcessingThread(l_ptrProcThread);
 
 	ServerAPI *l_ptrRec = new ServerAPI();
-	l_ptrRec->InintReceiverThread(l_ptrQ, m_ptrCondtionLock, 60);
+	l_ptrRec->InintReceiverThread(l_ptrQ, m_ptrCondtionLock, SIZE_OF_EVENTPACKET);
 	l_ptrRec->StartReceiverThread(l_ptrRec);
 
 	while (true) {
-		sleep(1);
+		sleep(5);
 	}
 
 	delete m_ptrCondtionLock;

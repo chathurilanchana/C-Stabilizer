@@ -12,15 +12,15 @@ using namespace std;
 
 class ReceivedMessage {
 public:
-	ReceivedMessage(int _partitionId, unsigned long _heartbeatTimestamp, vector <Label> _iLabel);
+	ReceivedMessage(int _partitionId, unsigned long _heartbeatTimestamp, vector <Label*> _iLabel);
 	virtual ~ReceivedMessage();
 	unsigned long GetHeartbeat();
 	int GetPartionId();
-	vector<Label> GetLabels();
+	vector<Label*> GetLabels();
 private:
 	unsigned long m_iHartbeatTimestamp;//to be used for vector to calcutale the min_stable
 	int m_iPartionId;
-	vector<Label> m_iLabels;//{Label.timestamp,Label.partitionId}=Key, Value=Label in the datastructure
+	vector<Label*> m_iLabels;//{Label.timestamp,Label.partitionId}=Key, Value=Label in the datastructure
 };
 
 #endif /* THREADDATA_H_ */

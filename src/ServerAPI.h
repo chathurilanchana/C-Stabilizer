@@ -14,33 +14,33 @@
 using namespace utl::que;
 using namespace utl;
 
-class ServerAPI: public TimerCallback,
-				public ServerCallback {
+class ServerAPI: public TimerCallback, public ServerCallback {
 public:
 	ServerAPI();
 	virtual ~ServerAPI();
-	void InintReceiverThread(EventQueueFrame *_ptrQHolder, QueueSizeCondition * _ptrCondtionLock, int _iThreadSingleContainerSize);
-		void StartThread();
+	void InintReceiverThread(EventQueueFrame *_ptrQHolder,
+			QueueSizeCondition * _ptrCondtionLock,
+			int _iThreadSingleContainerSize);
+	void StartThread();
 	static void * Run(void * _pProcessor);
 	static pthread_t StartReceiverThread(ServerAPI *_ptrReceiverThread);
 
-
 	void OnTimer(Timer * _pTimer);
-	void OnData(Server * _pServer, Client * _pClient, char * _zData,
-			int _iLen);
+	void OnData(Server * _pServer, Client * _pClient, char * _zData, int _iLen);
 	void OnConnect(Server * _pServer, Client * _pClient);
 	void OnDisconnect(Server * _pServer, Client * _pClient, ErrorMsgTag _Err);
 	void OnReadyToSend(Server * _pServer, Client * _pClient);
 	void Decode(Client *_pClient);
-	ReceivedMessage* ProcessedSocketData(unsigned int _uClientId, char *_ptrData);
-
+	ReceivedMessage* ProcessedSocketData(unsigned int _uClientId,
+			char *_ptrData);
+	int GetPayLoadLength(const char *_pData);
 private:
 	static pthread_t m_threadid;
-		EventQueueFrame * m_pQHolder;
-		int m_iSingleContainerSize;
-		QueueSizeCondition * m_ptrQueueSizeCondition;
-		int m_iTotalProcessingThreads;
-		Timer_Q *m_ptrTimer;
+	EventQueueFrame * m_pQHolder;
+	int m_iSingleContainerSize;
+	QueueSizeCondition * m_ptrQueueSizeCondition;
+	int m_iTotalProcessingThreads;
+	Timer_Q *m_ptrTimer;
 
 	SocketManager * p_SocketMan;
 	Server * p_CurProvider;

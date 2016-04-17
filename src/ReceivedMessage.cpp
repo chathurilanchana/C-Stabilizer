@@ -9,7 +9,7 @@ using namespace std;
 #include<vector>
 #include "ReceivedMessage.h"
 
-ReceivedMessage::ReceivedMessage(int _iPartionId, unsigned long _iHartbeatTimestamp, vector <Label> _iLabels) {
+ReceivedMessage::ReceivedMessage(int _iPartionId, unsigned long _iHartbeatTimestamp, vector <Label*> _iLabels) {
 
 	m_iHartbeatTimestamp = _iHartbeatTimestamp;
 	m_iPartionId = _iPartionId;
@@ -17,6 +17,12 @@ ReceivedMessage::ReceivedMessage(int _iPartionId, unsigned long _iHartbeatTimest
 }
 
 ReceivedMessage::~ReceivedMessage() {
+	// delete all the vector memory
+	for(int i=0;i<m_iLabels.size();++i){
+		delete m_iLabels[i];
+	}
+	//clear all the rererences
+	m_iLabels.clear();
 }
 
 unsigned long ReceivedMessage::GetHeartbeat() {
@@ -25,6 +31,6 @@ unsigned long ReceivedMessage::GetHeartbeat() {
 int ReceivedMessage::GetPartionId() {
 	return m_iPartionId;
 }
-vector<Label> ReceivedMessage::GetLabels() {
+vector<Label*> ReceivedMessage::GetLabels() {
 	return m_iLabels;
 }

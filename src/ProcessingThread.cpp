@@ -83,11 +83,12 @@ int ProcessingThread::processQ() {
 
 	m_ptrComQ->PollFromIntermediateQueue();
 	while ((pCont = m_ptrComQ->PollFromConsumerQueue())) {
+		++l_iProcessedMsg;
 		ReceivedMessage * _pMsg = (ReceivedMessage*) pCont->m_ptrData;
-		vector<Label> _pLabels=_pMsg->GetLabels();
-		/*printf(
+		vector<Label*> _pLabels=_pMsg->GetLabels();
+		printf(
 					"The processed message is  %ld %i %ld \n",
-					 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());*/
+					 _pMsg->GetHeartbeat(),_pMsg->GetPartionId(), _pLabels.size());
 		m_processed=m_processed+1;
 		if ((m_processed% 10)==0){
 			printf("count is %ld \n",m_processed);
@@ -95,8 +96,7 @@ int ProcessingThread::processQ() {
 		delete _pMsg;
 		delete pCont;
 		pCont = NULL;
-		vector<Label>().swap( _pLabels );
 	}
-	return l_iProcessedMsg * m_iSingleContainerSize;
+	return l_iProcessedMsg * 24;
 
 }
