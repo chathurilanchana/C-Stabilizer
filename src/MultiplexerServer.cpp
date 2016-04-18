@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
 	// start the server, this call is blocking call, never return!!!
 	//ServerAPI *ptrServer = new ServerAPI();
     //delete ptrServer;
+	printf("arg1:clientcount , arg2:delete log threshold, arg3:labelReceiverPort, arg4:deliveryLabelSize \n");
+
     int m_clientCount=atoi(argv[1]);
     long m_deleteThreshold=atol(argv[2]);//after how many deletes we should print
     int m_labelReceiverPort=atoi(argv[3]);
