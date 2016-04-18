@@ -18,6 +18,9 @@ using namespace std;
 #include <utility>
 #include <algorithm>
 #include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 #define SECONDS      1000000000
 #define MILLISECONDS 1000000
@@ -33,7 +36,7 @@ ProcessingThread::ProcessingThread() {
 	m_threadid = 0;
 	m_iSingleContainerSize = 0;
 	m_processed = 0;
-	m_oldTimerTick=0;
+	m_oldTimerTick = 0;
 
 }
 
@@ -50,15 +53,48 @@ void ProcessingThread::InitProcessingThread(
 
 }
 
-void ProcessingThread::SetClientCount(int count){
-	m_iclientCount=count;
-	for (int n = 1; n <count; ++n) {
-		m_heartbeat[n]=0; //intilalize heartbeat
+void ProcessingThread::SetClientCount(int count) {
+	m_iclientCount = count;
+	for (int n = 1; n < count; ++n) {
+		m_heartbeat[n] = 0; //intilalize heartbeat
 	}
 }
 
-void ProcessingThread::setDeleteThreshold(int deleteThreshold){
-	m_ideleteThreshold=deleteThreshold;
+bool ProcessingThread::openConnectionToLabelReceiver(int port) {
+	struct sockaddr_in serv_addr;
+	struct hostent *server;
+
+	m_socketfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (m_socketfd < 0){
+		printf("ERROR WHILE OPENING THE SOCKET \n");
+	return false;
+	}
+	server = gethostbyname("127.0.0.1"); //assuming receiver on same node
+	if (server == NULL) {
+		printf("NO SUCH HOST EXISTS \n");
+		return false;
+	}
+	bzero((char *) &serv_addr, sizeof(serv_addr));
+	serv_addr.sin_family = AF_INET;
+	bcopy((char *) server->h_addr,
+	(char *)&serv_addr.sin_addr.s_addr,
+	server->h_length);
+	serv_addr.sin_port = htons(port);
+	if (connect(m_socketfd, (const sockaddr*) &serv_addr, sizeof(serv_addr))
+			< 0){
+		printf("ERROR WHILE CONNECTING \n");
+	    return false;
+	}
+
+	return true;
+}
+
+void ProcessingThread::setLabelDeliverySize(int batchSize){
+	m_labelDeliverySize=batchSize;
+}
+
+void ProcessingThread::setDeleteThreshold(int deleteThreshold) {
+	m_ideleteThreshold = deleteThreshold;
 }
 
 void *ProcessingThread::Run(void * _pLHandler) {
@@ -111,18 +147,28 @@ void ProcessingThread::InsertBatchLabels(vector<Label*> _iLabels) {
 	}
 }
 
-std::list<int> ProcessingThread::DeletePossibleLabels(
-		unsigned long StableTimestamp) {
+void ProcessingThread::DeletePossibleLabels(unsigned long StableTimestamp) {
 	std::multimap<unsigned long, int>::iterator it, itup;
-	std::list<int> deletedList;
+
 	itup = m_storage.upper_bound(StableTimestamp);
 	for (it = m_storage.begin(); it != itup; ++it) {
 		deletedList.push_back((*it).second);
 		m_processed = m_processed + 1;
 	}
-    m_storage.erase(m_storage.begin(), itup);
-    printf("after delete contains %ld \n",m_storage.size());
-    return deletedList;
+	m_storage.erase(m_storage.begin(), itup);
+	//printf("after delete contains %ld \n", m_storage.size());
+}
+
+void ProcessingThread::DoPossibleBatchDelivery() {
+	int deletedCount = deletedList.size();
+	if (deletedCount > m_labelDeliverySize) {
+		write(m_socketfd, &deletedCount, sizeof(int));
+		int n = write(m_socketfd, &deletedList[0],
+				deletedCount * sizeof(int));
+		if (n < 0)
+			printf("********ERROR delivering labels********* \n");
+		deletedList.clear();
+	}
 }
 
 int ProcessingThread::processQ() {
@@ -144,16 +190,18 @@ int ProcessingThread::processQ() {
 
 		UpdateHeartbeatTable(l_ipartitionId, _pMsg->GetHeartbeat());
 		unsigned long l_iStable = GetStableTimestamp(l_ipartitionId);
-		std::list<int> deletedList=DeletePossibleLabels(l_iStable);
+		DeletePossibleLabels(l_iStable);
+		DoPossibleBatchDelivery();
 
 		if (m_processed >= m_ideleteThreshold) {
 			struct timeval tp;
 			gettimeofday(&tp, NULL);
-		    long int l_newTick = tp.tv_sec * 1000 + tp.tv_usec / 1000;
-		    long int duration = l_newTick - m_oldTimerTick;
-		    std::cout << "Duration in ms: "<< duration << " Delete count: "<<m_processed << "\n";
-		    m_oldTimerTick=l_newTick;
-			m_processed=0;
+			long int l_newTick = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+			long int duration = l_newTick - m_oldTimerTick;
+			std::cout << "Duration in ms: " << duration << " Delete count: "
+					<< m_processed << "\n";
+			m_oldTimerTick = l_newTick;
+			m_processed = 0;
 		}
 		delete _pMsg;
 		delete pCont;

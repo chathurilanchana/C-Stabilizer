@@ -24,7 +24,11 @@ int main(int argc, char **argv) {
     //delete ptrServer;
     int m_clientCount=atoi(argv[1]);
     long m_deleteThreshold=atol(argv[2]);//after how many deletes we should print
-    printf("client count is %i delete threshold is %ld \n",m_clientCount,m_deleteThreshold);
+    int m_labelReceiverPort=atoi(argv[3]);
+    int m_labelDeliverySize=atoi(argv[4]);// size when we deliver the stable labels
+
+    printf("client count; %i delete threshold:%ld port: %i :batch del: %i \n",m_clientCount,m_deleteThreshold
+    		,m_labelReceiverPort,m_labelDeliverySize);
 
 	QueueSizeCondition *m_ptrCondtionLock = new QueueSizeCondition();
 	m_ptrCondtionLock->InitQueueSizeCondition(50000);
@@ -34,7 +38,11 @@ int main(int argc, char **argv) {
 	l_ptrProcThread->InitProcessingThread(l_ptrQ, m_ptrCondtionLock, SIZE_OF_EVENTPACKET);
 	l_ptrProcThread->StartProcessingThread(l_ptrProcThread);
     l_ptrProcThread->SetClientCount(m_clientCount);
-    l_ptrProcThread->setDeleteThreshold(m_deleteThreshold);
+    l_ptrProcThread->setDeleteThreshold(m_deleteThreshold);//after how many deletes we print
+    bool m_receiverStatus=l_ptrProcThread->openConnectionToLabelReceiver(m_labelReceiverPort);
+    l_ptrProcThread->setLabelDeliverySize(m_labelDeliverySize);
+
+    printf("receiver status is %d \n",m_receiverStatus);
 
 	ServerAPI *l_ptrRec = new ServerAPI();
 	l_ptrRec->InintReceiverThread(l_ptrQ, m_ptrCondtionLock, SIZE_OF_EVENTPACKET);

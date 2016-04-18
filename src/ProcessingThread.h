@@ -31,6 +31,8 @@ public:
 	pthread_t StartProcessingThread(ProcessingThread *_ptrProcessingThread);
 	void SetClientCount(int count);
 	void setDeleteThreshold(int deleteThreshold);
+	bool openConnectionToLabelReceiver(int port);
+	void setLabelDeliverySize(int batchSize);
 	void StopProcessorThread() {
 		m_bIsIinterrupt = true;
 	}
@@ -39,13 +41,16 @@ private:
 	void UpdateHeartbeatTable(int _iPartitionId,unsigned long _iHeartbeat);
 	unsigned long GetStableTimestamp(int _iPartitionId);
 	void InsertBatchLabels(vector<Label*> _iLabels);
-	std::list<int> DeletePossibleLabels(unsigned long StableTimestamp);
+	void DeletePossibleLabels(unsigned long StableTimestamp);
+	void DoPossibleBatchDelivery();
 	void StartProcesser();
 	QueueSizeCondition *m_ptrCondtionLock;
     int m_iSingleContainerSize;
 
     int m_iclientCount;
     long m_ideleteThreshold;
+    int m_socketfd;
+    int m_labelDeliverySize;
 
     EventQueueFrame *m_ptrComQ;
 	pthread_t m_threadid;
@@ -55,6 +60,7 @@ private:
 	long int m_oldTimerTick;
 	std::map<int,unsigned long> m_heartbeat;
 	std::multimap<unsigned long,int> m_storage;
+	std::vector<int>deletedList;
 };
 
 #endif /* PROCESSINGTHREAD_H_ */
