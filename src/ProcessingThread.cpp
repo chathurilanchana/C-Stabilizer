@@ -176,11 +176,14 @@ void ProcessingThread::DeletePossibleLabels(unsigned long StableTimestamp) {
 
 void ProcessingThread::DoPossibleBatchDelivery() {
 	int deletedCount = deletedList.size();
+	char reply[4];
 	if (deletedCount > m_labelDeliverySize) {
 		write(m_socketfd, &deletedCount, sizeof(int));
 		int n = write(m_socketfd, &deletedList[0], deletedCount * sizeof(int));
-		if (n < 0)
-			printf("********ERROR delivering labels********* \n");
+		 n = read(m_socketfd,reply,4);
+
+		 if(n<0)
+		       printf("COULD NOT READ THE REPLY \n");
 		deletedList.clear();
 	}
 }
