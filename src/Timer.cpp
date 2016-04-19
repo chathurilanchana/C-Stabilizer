@@ -32,7 +32,6 @@ unsigned int Timer::GetTimerID() {
 	return ui_TimerID;
 }
 
-
 void Timer::SetNextFire(unsigned int _uiFireTime) {
 	ui_NextFire = _uiFireTime;
 }
@@ -40,7 +39,6 @@ void Timer::SetNextFire(unsigned int _uiFireTime) {
 TimerCallback * Timer::GetTimerCB() {
 	return p_TimerCB;
 }
-
 
 void Timer::ResetTimerId() {
 	ui_TimerID = 0;
@@ -54,7 +52,6 @@ void Timer::SetIsRemovedTimer(bool _State) {
 	b_IsRemovedTimer = _State;
 }
 
-
 TimerCallback::~TimerCallback() {
 }
 
@@ -62,5 +59,4 @@ Timer::~Timer() {
 	if (!b_IsRemovedTimer)
 		p_SocketMan->AddToDeletedTimerSet(ui_TimerID);
 }
-
 

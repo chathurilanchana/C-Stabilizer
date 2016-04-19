@@ -5,11 +5,10 @@
  *      Author: sri
  */
 
-
-
 #include "SocketManager.h"
-Client::Client(const char * _zIP, unsigned int _uiPort, unsigned int _uiClientID,
-		ClientCallback * _pCCB, SocketManager * _pSocketMan, Server * _pServer) :
+Client::Client(const char * _zIP, unsigned int _uiPort,
+		unsigned int _uiClientID, ClientCallback * _pCCB,
+		SocketManager * _pSocketMan, Server * _pServer) :
 		ServerType(E_EVT_CLIENT) {
 	ui_ClientID = _uiClientID;
 	p_ClientCB = _pCCB;

@@ -7,8 +7,8 @@
 
 #include "SocketManager.h"
 
-Server::Server(unsigned int _uiPort, unsigned int _uiServerID, ServerCallback * _pSCB,
-		SocketManager * _pSocketMan) :
+Server::Server(unsigned int _uiPort, unsigned int _uiServerID,
+		ServerCallback * _pSCB, SocketManager * _pSocketMan) :
 		ServerType(E_EVT_SERVER) {
 	ui_ServerPort = _uiPort;
 	ui_ServerID = _uiServerID;
@@ -70,6 +70,4 @@ void Server::SendToAllClients(const char * _zBuf, unsigned int _uiLen) {
 		++ite;
 	}
 }
-
-
 

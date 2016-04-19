@@ -5,11 +5,9 @@
  *      Author: sri
  */
 
-
 #include <stdio.h>
 #include <sys/time.h>
 #include "ThreadUtil.h"
-
 
 using namespace utl::que;
 using namespace utl;
@@ -18,7 +16,6 @@ using namespace utl;
 #define MILLISECONDS 1000000
 #define MICROSECONDS 1000
 #define NANOSECONDS  1
-
 
 EventDataPacket::EventDataPacket() {
 	m_ptrData = NULL;
@@ -55,8 +52,7 @@ EventQueueFrame::~EventQueueFrame() {
 	delete m_ptrIntermediateQueue;
 	delete m_ptrConsumerQueue;
 }
-void EventQueueFrame::AddToProducerQueue(
-		EventDataPacket * _pDataContainer) {
+void EventQueueFrame::AddToProducerQueue(EventDataPacket * _pDataContainer) {
 	m_ptrProducerQueue->PushToQueue(_pDataContainer);
 }
 void EventQueueFrame::AddToProducerQueueWithLock(
@@ -173,8 +169,7 @@ void QueueSizeCondition::DecreaseQueueSize(unsigned int _iValue) {
 Timer_Q::Timer_Q() {
 	m_iSleepInterval = 0;
 }
-Timer_Q::Timer_Q(int _iThreadSleepInterval,
-		bool _isThisMilliSleep) {
+Timer_Q::Timer_Q(int _iThreadSleepInterval, bool _isThisMilliSleep) {
 	m_iSleepInterval = _iThreadSleepInterval;
 	memset(&m_stNanoTimeSpec, 0, sizeof(m_stNanoTimeSpec));
 	m_stNanoTimeSpec.tv_sec = 0;
@@ -236,5 +231,4 @@ unsigned long long Timer_Q::GetMonotonicTime() {
 void Timer_Q::NanoSleep() {
 	nanosleep(&m_stNanoTimeSpec, (struct timespec *) NULL);
 }
-
 

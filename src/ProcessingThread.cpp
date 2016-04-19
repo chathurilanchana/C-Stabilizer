@@ -65,9 +65,9 @@ bool ProcessingThread::openConnectionToLabelReceiver(int port) {
 	struct hostent *server;
 
 	m_socketfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (m_socketfd < 0){
+	if (m_socketfd < 0) {
 		printf("ERROR WHILE OPENING THE SOCKET \n");
-	return false;
+		return false;
 	}
 	server = gethostbyname("127.0.0.1"); //assuming receiver on same node
 	if (server == NULL) {
@@ -81,16 +81,16 @@ bool ProcessingThread::openConnectionToLabelReceiver(int port) {
 	server->h_length);
 	serv_addr.sin_port = htons(port);
 	if (connect(m_socketfd, (const sockaddr*) &serv_addr, sizeof(serv_addr))
-			< 0){
+			< 0) {
 		printf("ERROR WHILE CONNECTING \n");
-	    return false;
+		return false;
 	}
 
 	return true;
 }
 
-void ProcessingThread::setLabelDeliverySize(int batchSize){
-	m_labelDeliverySize=batchSize;
+void ProcessingThread::setLabelDeliverySize(int batchSize) {
+	m_labelDeliverySize = batchSize;
 }
 
 void ProcessingThread::setDeleteThreshold(int deleteThreshold) {
@@ -150,12 +150,27 @@ void ProcessingThread::InsertBatchLabels(vector<Label*> _iLabels) {
 void ProcessingThread::DeletePossibleLabels(unsigned long StableTimestamp) {
 	std::multimap<unsigned long, int>::iterator it, itup;
 
-	itup = m_storage.upper_bound(StableTimestamp);
-	for (it = m_storage.begin(); it != itup; ++it) {
-		deletedList.push_back((*it).second);
-		m_processed = m_processed + 1;
+	it = m_storage.begin();
+	while (true) {
+		{
+			if ((*it).first > StableTimestamp){
+							break;
+			}
+			deletedList.push_back((*it).second);
+			m_processed = m_processed + 1;
+			it++;
+		}
 	}
+	itup = it--;
 	m_storage.erase(m_storage.begin(), itup);
+
+	/*itup = m_storage.upper_bound(StableTimestamp);
+	 for (it = m_storage.begin(); it != itup; ++it) {
+	 deletedList.push_back((*it).second);
+	 m_processed = m_processed + 1;
+	 }
+	 m_storage.erase(m_storage.begin(), itup);*/
+
 	//printf("after delete contains %ld \n", m_storage.size());
 }
 
@@ -163,8 +178,7 @@ void ProcessingThread::DoPossibleBatchDelivery() {
 	int deletedCount = deletedList.size();
 	if (deletedCount > m_labelDeliverySize) {
 		write(m_socketfd, &deletedCount, sizeof(int));
-		int n = write(m_socketfd, &deletedList[0],
-				deletedCount * sizeof(int));
+		int n = write(m_socketfd, &deletedList[0], deletedCount * sizeof(int));
 		if (n < 0)
 			printf("********ERROR delivering labels********* \n");
 		deletedList.clear();
@@ -175,7 +189,6 @@ int ProcessingThread::processQ() {
 
 	EventDataPacket * pCont = NULL;
 	int l_iProcessedMsg = 0;
-	struct timeval tp;
 	m_ptrComQ->PollFromIntermediateQueue();
 	while ((pCont = m_ptrComQ->PollFromConsumerQueue())) {
 		++l_iProcessedMsg;

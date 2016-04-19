@@ -90,7 +90,8 @@ public:
 class Timer: public ServerType {
 public:
 	Timer(unsigned int _uiInterval, TimerCallback * _pTCB, bool _bIsRepeated,
-			unsigned int _uiTimerID, SocketManager * _pSocketMan, int _iTimerType = -1);
+			unsigned int _uiTimerID, SocketManager * _pSocketMan,
+			int _iTimerType = -1);
 	virtual ~Timer();
 	unsigned int GetInterval();
 	unsigned int GetNextFire();
@@ -118,20 +119,21 @@ private:
 class Client: public ServerType {
 public:
 	Client(const char * _zIP, unsigned int _uiPort, unsigned int _uiClientID,
-			ClientCallback * _pCCB, SocketManager * _pSocketMan, Server * _pServer);
+			ClientCallback * _pCCB, SocketManager * _pSocketMan,
+			Server * _pServer);
 	virtual ~Client();
 
 	bool Send(const char * _zData, int _iLen);
 	void SendBufferedData();
 	void Detach();
 
-	unsigned int  GetClientID();
+	unsigned int GetClientID();
 	ClientCallback * GetClientCB();
 	Server * GetServer();
 	void SetServer(Server * _pServer);
 	void SetSocketManager(SocketManager * _pSockManager);
 	const char * GetClientAddress() const;
-	unsigned int GetClientPort() const ;
+	unsigned int GetClientPort() const;
 	void SetCCB(ClientCallback * _pCCB);
 	bool IsBuffered();
 	void SetBufferStatus(bool _bStatus);
@@ -157,8 +159,8 @@ protected:
 
 class Server: public ServerType {
 public:
-	Server(unsigned int _uiPort, unsigned int _uiServerID, ServerCallback * _pSCB,
-			SocketManager * _pSocketMan);
+	Server(unsigned int _uiPort, unsigned int _uiServerID,
+			ServerCallback * _pSCB, SocketManager * _pSocketMan);
 	virtual ~Server();
 	unsigned int GetServerID();
 	unsigned int GetServerPort();
@@ -174,7 +176,7 @@ public:
 
 private:
 	unsigned int ui_ServerPort;
-	unsigned int  ui_ServerID; //socket descriptor
+	unsigned int ui_ServerID; //socket descriptor
 	ServerCallback * p_ServerCB;
 	SocketManager * p_SocketMan;
 	ACTIVE_CLIENTS set_ActiveClients;
@@ -188,8 +190,8 @@ public:
 	void Run();
 	Timer * CreateTimer(double _dIntaval, bool _bIsRepeated,
 			TimerCallback * _pTCB, int _iTimerType = -1);
-	Server * CreateServer(unsigned int _uiPort, ServerCallback * _pSCB, bool _bHB =
-			false);
+	Server * CreateServer(unsigned int _uiPort, ServerCallback * _pSCB,
+			bool _bHB = false);
 	Client * CreateClient(const char * _zServerIP, unsigned int _uiServerPort,
 			ClientCallback * _pCCB, bool _bHB);
 
@@ -200,7 +202,6 @@ public:
 
 	void Detach(Client * _pClient);
 	void AttachClient(Client * _pClient, ClientCallback * _pCCB);
-
 
 	static int SetLimits(unsigned int _uiSoftLimit, unsigned int _uiHardLimit);
 
@@ -235,7 +236,7 @@ private:
 	TIMER_LIST lst_FireAll;
 	Timer * p_HBTimer;
 
-	int  i_EpollFd;
+	int i_EpollFd;
 	int i_CliAddrSize;
 	struct sockaddr_in stCliAddr;
 

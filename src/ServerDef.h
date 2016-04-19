@@ -61,29 +61,25 @@ using namespace std;
 #define MAX_EPOL_WAIT	 		5
 #define CLI_READ_SIZE 15000
 
-enum TYPES
-{
-	E_EVT_CLIENT = 0,
-	E_EVT_SERVER,
-	E_EVT_TIMER,
-	E_EVT_TYPES_COUNT
+enum TYPES {
+	E_EVT_CLIENT = 0, E_EVT_SERVER, E_EVT_TIMER, E_EVT_TYPES_COUNT
 };
 
-class ServerType
-{
+class ServerType {
 public:
-	ServerType(TYPES _etEType)
-	{
+	ServerType(TYPES _etEType) {
 		et_EType = _etEType;
 	}
-	virtual ~ServerType(){};
-	inline TYPES getEvtType(){return et_EType ; };
-
+	virtual ~ServerType() {
+	}
+	;
+	inline TYPES getEvtType() {
+		return et_EType;
+	}
+	;
 
 private:
 	TYPES et_EType;
 };
-
-
 
 #endif /* SERVERDEF_H_ */

@@ -76,9 +76,9 @@ void ServerAPI::OnTimer(Timer * _pTimer) {
 ReceivedMessage* ServerAPI::ProcessedSocketData(unsigned int _uClientId,
 		char *_ptrData) {
 	/*cout << "[INFO] [ClientID - " << _uClientId << "]" << " Actual Data:  " << _ptrData
-	<< endl;*/
+	 << endl;*/
 	++g_ReceivedMsg;
-	 //printf("processed - %d \n",procesedmsg);
+	//printf("processed - %d \n",procesedmsg);
 	vector<Label*> labels; //because we receive a list of labels
 	std::vector<char*> v;
 	char* chars_array = strtok(_ptrData, "|");
@@ -109,7 +109,7 @@ ReceivedMessage* ServerAPI::ProcessedSocketData(unsigned int _uClientId,
 		Label *pLabel1 = new Label(heartbeat, value);
 		labels.push_back(pLabel1);
 	}
-	    //printf("partition id: %i heartbeat %ld \n", partitionId, heartbeat);
+	//printf("partition id: %i heartbeat %ld \n", partitionId, heartbeat);
 	ReceivedMessage *pEventData = new ReceivedMessage(partitionId, heartbeat,
 			labels);
 	delete[] _ptrData;
