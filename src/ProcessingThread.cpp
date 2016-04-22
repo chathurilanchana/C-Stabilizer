@@ -56,7 +56,6 @@ void ProcessingThread::InitProcessingThread(
 void ProcessingThread::SetClientCount(int count) {
 	m_iclientCount = count;
 	for (int n = 1; n <= count; n++) {
-		printf("I'm inside \n");
 		m_heartbeat[n] = 0; //intilalize heartbeat
 	}
 }
@@ -136,7 +135,6 @@ unsigned long ProcessingThread::GetStableTimestamp(int _iPartitionId) {
 			l_minStableTimestamp = it->second;
 		}
 	}
-	printf("min stable is %ld \n", l_minStableTimestamp);
 	return l_minStableTimestamp;
 }
 
@@ -200,7 +198,6 @@ int ProcessingThread::processQ() {
 	int l_iProcessedMsg = 0;
 	m_ptrComQ->PollFromIntermediateQueue();
 	while ((pCont = m_ptrComQ->PollFromConsumerQueue())) {
-		printf("there is something to process \n");
 		++l_iProcessedMsg;
 		ReceivedMessage * _pMsg = (ReceivedMessage*) pCont->m_ptrData;
 		//vector<Label*> _pLabels=_pMsg->GetLabels();
