@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 	long m_deleteThreshold = atol(argv[2]); //after how many deletes we should print
 	int m_labelReceiverPort = atoi(argv[3]);
 	int m_labelDeliverySize = atoi(argv[4]); // size when we deliver the stable labels
-	int m_ignoreMsgCount=atol(argv[5]);
+	long m_ignoreMsgCount=atol(argv[5]);
 
 	printf("client count; %i delete threshold:%ld port: %i :batch del: %i \n",
 			m_clientCount, m_deleteThreshold, m_labelReceiverPort,

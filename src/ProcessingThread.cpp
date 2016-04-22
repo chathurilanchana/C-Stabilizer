@@ -55,7 +55,8 @@ void ProcessingThread::InitProcessingThread(
 
 void ProcessingThread::SetClientCount(int count) {
 	m_iclientCount = count;
-	for (int n = 1; n < count; ++n) {
+	for (int n = 1; n <= count; n++) {
+		printf("I'm inside \n");
 		m_heartbeat[n] = 0; //intilalize heartbeat
 	}
 }
@@ -130,11 +131,12 @@ void ProcessingThread::UpdateHeartbeatTable(int _iPartitionId,
 unsigned long ProcessingThread::GetStableTimestamp(int _iPartitionId) {
 	unsigned long l_minStableTimestamp = m_heartbeat[_iPartitionId];
 	std::map<int, unsigned long>::iterator it;
-	for (it = m_heartbeat.begin(); it != m_heartbeat.end(); ++it) {
+	for (it = m_heartbeat.begin(); it != m_heartbeat.end(); it++) {
 		if (it->second < l_minStableTimestamp) {
 			l_minStableTimestamp = it->second;
 		}
 	}
+	printf("min stable is %ld \n", l_minStableTimestamp);
 	return l_minStableTimestamp;
 }
 
@@ -153,18 +155,22 @@ void ProcessingThread::DeletePossibleLabels(unsigned long StableTimestamp) {
 	it = m_storage.begin();
 	while (true) {
 		{
-			if ((*it).first > StableTimestamp){
-							break;
+			if (it == m_storage.end()) {
+				break;
+			} else if ((*it).first > StableTimestamp) {
+				break;
 			}
 			deletedList.push_back((*it).second);
 			m_processed = m_processed + 1;
-			it++;
+			if (it != m_storage.end()) {
+				it++;
+			}
 		}
 	}
 	itup = it--;
 	m_storage.erase(m_storage.begin(), itup);
 
-	/*itup = m_storage.upper_bound(StableTimestamp);
+	/* itup = m_storage.upper_bound(StableTimestamp);
 	 for (it = m_storage.begin(); it != itup; ++it) {
 	 deletedList.push_back((*it).second);
 	 m_processed = m_processed + 1;
@@ -180,10 +186,10 @@ void ProcessingThread::DoPossibleBatchDelivery() {
 	if (deletedCount > m_labelDeliverySize) {
 		write(m_socketfd, &deletedCount, sizeof(int));
 		int n = write(m_socketfd, &deletedList[0], deletedCount * sizeof(int));
-		 n = read(m_socketfd,reply,4);
+		n = read(m_socketfd, reply, 4);
 
-		 if(n<0)
-		       printf("COULD NOT READ THE REPLY \n");
+		if (n < 0)
+			printf("COULD NOT READ THE REPLY \n");
 		deletedList.clear();
 	}
 }
@@ -194,6 +200,7 @@ int ProcessingThread::processQ() {
 	int l_iProcessedMsg = 0;
 	m_ptrComQ->PollFromIntermediateQueue();
 	while ((pCont = m_ptrComQ->PollFromConsumerQueue())) {
+		printf("there is something to process \n");
 		++l_iProcessedMsg;
 		ReceivedMessage * _pMsg = (ReceivedMessage*) pCont->m_ptrData;
 		//vector<Label*> _pLabels=_pMsg->GetLabels();

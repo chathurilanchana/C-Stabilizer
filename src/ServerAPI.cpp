@@ -187,8 +187,6 @@ void ServerAPI::Decode(Client *_pClient) {
 			m_pQHolder->PushToIntermediateQueue();
 			}
 
-
-
 			_pClient->m_RcvBuffer.DeleteFromStart(l_iPayLoadLength);
 			pData = _pClient->m_RcvBuffer.GetData();
 
