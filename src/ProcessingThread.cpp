@@ -160,9 +160,7 @@ void ProcessingThread::DeletePossibleLabels(unsigned long StableTimestamp) {
 			}
 			deletedList.push_back((*it).second);
 			m_processed = m_processed + 1;
-			if (it != m_storage.end()) {
-				it++;
-			}
+			it++;
 		}
 	}
 	itup = it--;
