@@ -28,6 +28,7 @@ void ServerAPI::InintReceiverThread(EventQueueFrame *_ptrQHolder,
 	m_pQHolder = _ptrQHolder;
 	m_ptrQueueSizeCondition = _ptrCondtionLock;
 	m_iSingleContainerSize = _iThreadSingleContainerSize;
+	m_iCurrentMsgCount=0;
 }
 
 ServerAPI::~ServerAPI() {
@@ -70,6 +71,11 @@ void ServerAPI::StartThread() {
 }
 
 void ServerAPI::OnTimer(Timer * _pTimer) {
+
+}
+
+void ServerAPI::SetIgnoreMessageCount(long _iIgnoreCount){
+	m_ignoreMsgCount=_iIgnoreCount;
 
 }
 
@@ -172,10 +178,16 @@ void ServerAPI::Decode(Client *_pClient) {
 			ReceivedMessage *pEventData = ProcessedSocketData(
 					_pClient->GetClientID(), ptrData);
 
+            m_iCurrentMsgCount++;
+
+			if(m_iCurrentMsgCount>m_ignoreMsgCount){ /*to ignore initial messages*/
 			EventDataPacket *pPacket = new EventDataPacket(pEventData);
 			m_ptrQueueSizeCondition->IncreaseQueueSize(m_iSingleContainerSize);
 			m_pQHolder->AddToProducerQueue(pPacket);
 			m_pQHolder->PushToIntermediateQueue();
+			}
+
+
 
 			_pClient->m_RcvBuffer.DeleteFromStart(l_iPayLoadLength);
 			pData = _pClient->m_RcvBuffer.GetData();

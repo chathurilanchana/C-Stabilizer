@@ -61,6 +61,7 @@ private:
 	std::map<int, unsigned long> m_heartbeat;
 	std::multimap<unsigned long, int> m_storage;
 	std::vector<int> deletedList;
+
 };
 
 #endif /* PROCESSINGTHREAD_H_ */

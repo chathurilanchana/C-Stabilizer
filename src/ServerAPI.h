@@ -34,6 +34,7 @@ public:
 	ReceivedMessage* ProcessedSocketData(unsigned int _uClientId,
 			char *_ptrData);
 	int GetPayLoadLength(const char *_pData);
+	void SetIgnoreMessageCount(long _iIgnoreCount);
 private:
 	static pthread_t m_threadid;
 	EventQueueFrame * m_pQHolder;
@@ -44,6 +45,9 @@ private:
 
 	SocketManager * p_SocketMan;
 	Server * p_CurProvider;
+
+	long m_ignoreMsgCount;
+	long m_iCurrentMsgCount;
 };
 
 #endif /* SERVERAPI_H_ */

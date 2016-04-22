@@ -23,12 +23,13 @@ int main(int argc, char **argv) {
 	//ServerAPI *ptrServer = new ServerAPI();
 	//delete ptrServer;
 	printf(
-			"arg1:clientcount , arg2:delete log threshold, arg3:labelReceiverPort, arg4:deliveryLabelSize \n");
+			"arg1:clientcount , arg2:delete log threshold, arg3:labelReceiverPort, arg4:deliveryLabelSize arg5:IgnoreMsgCount \n");
 
 	int m_clientCount = atoi(argv[1]);
 	long m_deleteThreshold = atol(argv[2]); //after how many deletes we should print
 	int m_labelReceiverPort = atoi(argv[3]);
 	int m_labelDeliverySize = atoi(argv[4]); // size when we deliver the stable labels
+	int m_ignoreMsgCount=atol(argv[5]);
 
 	printf("client count; %i delete threshold:%ld port: %i :batch del: %i \n",
 			m_clientCount, m_deleteThreshold, m_labelReceiverPort,
@@ -54,6 +55,7 @@ int main(int argc, char **argv) {
 	l_ptrRec->InintReceiverThread(l_ptrQ, m_ptrCondtionLock,
 			SIZE_OF_EVENTPACKET);
 	l_ptrRec->StartReceiverThread(l_ptrRec);
+	l_ptrRec->SetIgnoreMessageCount(m_ignoreMsgCount);
 
 	while (true) {
 		sleep(5);
