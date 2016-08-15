@@ -1,9 +1,3 @@
-/*
- * Timer.cpp
- *
- *  Created on: Apr 15, 2016
- *      Author: sri
- */
 
 #include "SocketManager.h"
 Timer::Timer(unsigned int _uiInterval, TimerCallback * _pTCB, bool _bIsRepeated,

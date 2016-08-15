@@ -1,9 +1,4 @@
-/*
- * ProcessingThread.h
- *
- *  Created on: Apr 11, 2016
- *      Author: sri
- */
+
 
 #ifndef PROCESSINGTHREAD_H_
 #define PROCESSINGTHREAD_H_

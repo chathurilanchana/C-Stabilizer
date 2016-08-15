@@ -1,9 +1,4 @@
-/*
- * SocketManager.h
- *
- *  Created on: Apr 15, 2016
- *      Author: sri
- */
+
 
 #ifndef SOCKETMANAGER_H_
 #define SOCKETMANAGER_H_

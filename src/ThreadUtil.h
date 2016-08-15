@@ -1,9 +1,3 @@
-/*
- * ThreadUtil.h
- *
- *  Created on: Apr 11, 2016
- *      Author: sri
- */
 
 #ifndef THREADUTIL_H_
 #define THREADUTIL_H_

@@ -1,9 +1,4 @@
-/*
- * Label.h
- *
- *  Created on: Apr 12, 2016
- *      Author: chathuri
- */
+
 
 #ifndef LABEL_H_
 #define LABEL_H_

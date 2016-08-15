@@ -1,9 +1,4 @@
-/*
- * HighPerformanceServer.h
- *
- *  Created on: Apr 15, 2016
- *      Author: sri
- */
+
 
 #ifndef SERVERAPI_H_
 #define SERVERAPI_H_

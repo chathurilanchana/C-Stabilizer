@@ -1,9 +1,4 @@
-/*
- * ThreadUtil.cpp
- *
- *  Created on: Apr 11, 2016
- *      Author: sri
- */
+
 
 #include <stdio.h>
 #include <sys/time.h>

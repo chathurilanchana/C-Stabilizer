@@ -1,9 +1,4 @@
-/*
- * Client.cpp
- *
- *  Created on: Apr 15, 2016
- *      Author: sri
- */
+
 
 #include "SocketManager.h"
 Client::Client(const char * _zIP, unsigned int _uiPort,

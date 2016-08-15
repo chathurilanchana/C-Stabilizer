@@ -1,9 +1,4 @@
-/*
- * Data.cpp
- *
- *  Created on: Apr 15, 2016
- *      Author: sri
- */
+
 
 #include "Data.h"
 using namespace std;

@@ -1,10 +1,3 @@
-//============================================================================
-// Name        : MultiplexerServer.cpp
-// Author      : Sri
-// Version     :
-// Copyright   : Your copyright notice
-// Description : MultiplexerServer in C++, Ansi-style
-//============================================================================
 
 #include <iostream>
 

@@ -1,9 +1,3 @@
-/*
- * Data.h
- *
- *  Created on: Apr 15, 2016
- *      Author: sri
- */
 
 #ifndef DATA_H_
 #define DATA_H_

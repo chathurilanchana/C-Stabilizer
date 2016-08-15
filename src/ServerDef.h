@@ -1,9 +1,4 @@
-/*
- * ServerDef.h
- *
- *  Created on: Apr 15, 2016
- *      Author: sri
- */
+
 
 #ifndef SERVERDEF_H_
 #define SERVERDEF_H_

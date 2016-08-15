@@ -1,9 +1,4 @@
-/*
- * ThreadData.cpp
- *
- *  Created on: Apr 11, 2016
- *      Author: sri
- */
+
 using namespace std;
 #include<vector>
 #include "ReceivedMessage.h"

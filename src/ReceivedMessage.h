@@ -1,9 +1,4 @@
-/*
- * ThreadData.h
- *
- *  Created on: Apr 11, 2016
- *      Author: sri
- */
+
 using namespace std;
 #include "Label.h"
 #include<vector>
