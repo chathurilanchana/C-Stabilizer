@@ -6,10 +6,13 @@ This experiment was performed to measure the maximum throughput at eunomia. In h
 
 # Usage
 
-Build With Makefile
-Run the Multiplexer server with the necessary parameters
+1) Build With Makefile
+2) Run the Multiplexer server with the necessary parameters
 
 Required Parameters
 -----------------------------------------------------------------------------------------
 
-"arg1:Number of vnodes (simulated clients) , arg2:delete log threshold (for gathering stats (how often to print stats)), arg3:labelReceiverPort, arg4:deliveryLabelSize arg5:IgnoreMsgCount (To ignore initial messages (to avoid the influence of startup delays))
+1) arg1:Number of vnodes (simulated clients)
+2) arg2:delete log threshold (for gathering stats (how often to print stats))
+3) arg3:labelReceiverPort
+4) arg4:deliveryLabelSize arg5:IgnoreMsgCount (To ignore initial messages (to avoid the influence of startup delays))
